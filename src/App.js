@@ -93,7 +93,7 @@ class Cpu extends React.Component{
     return (
       <select value={this.state.selectValueCpu} onChange={this.onSelectChange} onClick={() => { this.props.updateDataCpu(cpus[this.state.selectValueCpu])}}> 
       {cpus.map((value, index)=>{
-        if ((this.props.mItems.socket === value.socket)||(value.name === "не выбрано")) {
+        if ((this.props.mItems.socket === value.socket)||(value.price === 0)) {
           return(
             <option key={index} value={index}>{value.name}</option> 
             );
@@ -145,7 +145,7 @@ class Ram extends React.Component{
     return (
       <select value={this.state.selectValueRam} onChange={this.onSelectChange} onClick={() => { this.props.updateDataRam(rams[this.state.selectValueRam])}}> 
       {rams.map((value, index)=>{
-       if ((this.props.rItems.ram === value.ram)||(value.name === "не выбрано")) {
+       if ((this.props.rItems.ram === value.ram)||(value.price === 0)) {
         return(
           <option key={index} value={index}>{value.name}</option> 
           );
@@ -198,7 +198,7 @@ render() {
   return (
     <select value={this.state.selectValuePower} onChange={this.onSelectChange} onClick={() => { this.props.updateDataPower(powers[this.state.selectValuePower])}}>
     {powers.map((value, index)=>{
-      if ((this.props.pItems < value.power)||(value.name === "не выбрано")) {
+      if ((this.props.pItems < value.power)||(value.price === 0)) {
         return(
           <option key={index} value={index}>{value.name}</option> 
           );
@@ -302,7 +302,7 @@ render() {
   return (
     <select value={this.state.selectValueCase} onChange={this.onSelectChange} onClick={() => { this.props.updateDataCase(casess[this.state.selectValueCase])}}>
     {casess.map((value, index)=>{
-      if ((this.props.csItems.format === value.format)||(value.name === "не выбрано")) {
+      if ((this.props.csItems.format === value.format)||(value.price === 0)) {
         return(
           <option key={index} value={index}>{value.name}</option> 
           );
