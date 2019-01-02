@@ -1,0 +1,95 @@
+
+body{
+	background: #F4F2F2;
+	margin: 0;
+}
+
+img{
+	width: 0%;
+}
+
+.wrapper img{
+	width: 100px;
+}
+
+
+.wrapper{
+	width: 1200px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	grid-gap: 50px;
+	height: 100vh;
+}
+
+.menu{
+	margin-top: 20px;
+	height: 700px;
+	display: grid;
+	grid-template-columns: 1fr;
+	font-size: 16px;
+	font-family: verdana;
+}
+
+.menu div{
+	align-self: center;
+}
+
+.grid-info{
+	display: grid;
+	grid-template-columns: 170px 1fr 100px;
+}
+
+.null{
+	margin: auto auto;
+
+}
+
+.section{
+	padding: 35px;
+	height: 880px;
+	display: grid;
+	grid-template-rows: repeat(8,100px);
+	grid-gap: 15px;
+	background: #fff;
+	box-shadow: 0 7px 14px rgba(0,0,0,0.25), 0 5px 5px rgba(0,0,0,0.22);
+	font-size: 16px;
+	font-family: verdana;
+}
+
+.grid-price{
+	text-align: right;
+	margin-right: 60px;
+	margin-left: 60px;
+	border-top: 1px solid black;
+}
+
+.grid-info div:nth-child(1){
+	align-self: center;
+	justify-self: end;
+}
+
+.grid-info div:nth-child(2){
+	align-self: center;
+	text-align: center;
+}
+
+.grid-info div:nth-child(3){
+	align-self: center;
+	justify-self: start;
+}
+
+select {
+	padding: 10px;
+	font-size: 15px;
+	font-family: verdana;
+}
+
+
+
+
+
+
+
+
+
