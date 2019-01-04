@@ -14,7 +14,9 @@ class Motherboard extends React.Component{
  constructor(props) {
   super(props);
   this.state = {
-    selectValue: 0
+    selectValue: 0,
+    menus : [nulle],
+    connect : false
   };
 
   this.onSelectChange = this.onSelectChange.bind(this);
@@ -22,14 +24,22 @@ class Motherboard extends React.Component{
 
 onSelectChange(event) {
   this.setState({selectValue: event.target.value});
-  this.props.updateData(this.props.menus[this.state.selectValue]);
 }
 
+ componentWillMount() {
+  axios
+  .get("https://monreve.ml/server/mother.php")
+  .then(({ data }) => {
+    this.setState({
+      menus: data,
+      connect : true
+    });
+    this.props.updateData(this.state.menus[this.state.selectValue]);
+  });
+}
 
 render() {
-  console.log(this.state.connect);
-
-  var menus = this.props.menus;
+  var menus = this.state.menus;
 
   for (let i = 0; i < menus.length; i++) {
     menus[i].power = +menus[i].power;
@@ -70,6 +80,7 @@ class Cpu extends React.Component{
       this.setState({
         cpus: data
       });
+      this.props.updateDataCpu(this.state.cpus[this.state.selectValueCpu]);
     });
   }
   
@@ -123,6 +134,7 @@ class Ram extends React.Component{
       this.setState({
         rams: data
       });
+      this.props.updateDataRam(this.state.rams[this.state.selectValueRam]);
     });
   }
 
@@ -175,6 +187,7 @@ componentWillMount() {
     this.setState({
       power: data
     });
+     this.props.updateDataPower(this.state.power[this.state.selectValuePower]);
   });
 }
 
@@ -279,6 +292,7 @@ componentWillMount() {
     this.setState({
       cases: data
     });
+    this.props.updateDataCase(this.state.cases[this.state.selectValueCase])
   });
 }
 
@@ -332,6 +346,7 @@ componentWillMount() {
     this.setState({
       hdd: data
     });
+    this.props.updateDataHdd(this.state.hdd[this.state.selectValueHdd])
   });
 }
 
@@ -381,12 +396,12 @@ class App extends Component {
     selectValueVideo: nulle,
     selectValueHdd: nulle,
     selectValueCpu: nulle,
-    selectValueCase: nulle,
-    menus : [nulle],
-    connect : false
+    selectValueCase: nulle
   };
   updateData = (value) => {
-    this.setState({ selectValue: value })
+    this.setState({ 
+      selectValue: value
+     })
   };
   updateDataPower = (value) => {
     this.setState({ selectValuePower: value })
@@ -407,17 +422,6 @@ class App extends Component {
     this.setState({ selectValueCase: value })
   }
 
-  componentWillMount() {
-  axios
-  .get("https://monreve.ml/server/mother.php")
-  .then(({ data }) => {
-    this.setState({
-      menus: data,
-      connect : true
-    });
-  });
-}
-
   render() {
     var mother = this.state.selectValue;
     var powerr = this.state.selectValuePower;
@@ -426,13 +430,33 @@ class App extends Component {
     var hdd = this.state.selectValueHdd;
     var videocard = this.state.selectValueVideo;
     var cases = this.state.selectValueCase;
+    
+    var connect = false;
+    
+    var classN = "opacity";
+    var Load = <Loading />;
 
     var totalPrice = mother.price + powerr.price + memory.price + cpu.price + hdd.price + videocard.price + cases.price;
     var totalPower = (mother.power + memory.power + cpu.power + hdd.power + videocard.power)*(1 + 20/100);
 
-    if (this.state.connect === true) {
+    if (((mother !== nulle)&&(powerr !== nulle))&&
+       ((memory !== nulle)&&(cpu !== nulle))&&
+        ((hdd !== nulle)&&(cases !== nulle))) {
+      connect = true;
+    }else{
+      connect = false;
+    }
+
+    if (connect) {
+      classN = "wrapper";
+      Load = null
+    }
+
+
     return (
-      <div className="wrapper">
+      <div>
+      {Load}
+      <div className={classN}>
       <div className="menu">
       <p>Материнские платы</p><Motherboard menus={this.state.menus} updateData={this.updateData} />
       <p>Процессоры</p><Cpu mItems={mother} updateDataCpu={this.updateDataCpu} />
@@ -444,12 +468,8 @@ class App extends Component {
       </div>
       <Info mItems={mother} cItems={cpu} rItems={memory} pItems={powerr} vItems={videocard} hItems={hdd} csItems={cases} tprice={totalPrice} /> 
       </div>
+      </div>
       );
-  }else{
-    return(
-      <Loading />
-    );
-  }
   }
 }
 
