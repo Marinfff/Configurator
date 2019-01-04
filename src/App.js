@@ -5,8 +5,8 @@ import './App.css';
 
 let nulle = {
   "name" : "не выбрано",
-  "price" : 0,
-  "power" : 0
+  "power" : 0,
+  "price" : 0
 }
 
 class Motherboard extends React.Component{
@@ -14,8 +14,7 @@ class Motherboard extends React.Component{
  constructor(props) {
   super(props);
   this.state = {
-    selectValue: 0,
-    menus : [nulle]
+    selectValue: 0
   };
 
   this.onSelectChange = this.onSelectChange.bind(this);
@@ -23,37 +22,30 @@ class Motherboard extends React.Component{
 
 onSelectChange(event) {
   this.setState({selectValue: event.target.value});
+  this.props.updateData(this.props.menus[this.state.selectValue]);
 }
 
-componentWillMount() {
-  axios
-  .get("http://monreve.ml/server/mother.php")
-  .then(({ data }) => {
-    this.setState({
-      menus: data
-    });
-  });
-}
 
 render() {
+  console.log(this.state.connect);
 
-  var menus = this.state.menus;
+  var menus = this.props.menus;
 
   for (let i = 0; i < menus.length; i++) {
     menus[i].power = +menus[i].power;
     menus[i].price = +menus[i].price;
   };
 
-  return (
-    <select value={this.state.selectValue} onChange={this.onSelectChange} onClick={() => { this.props.updateData(menus[this.state.selectValue])}}>
+    return(
+      <select value={this.state.selectValue} onChange={this.onSelectChange} onClick={() => { this.props.updateData(menus[this.state.selectValue])}}>
     {menus.map((value, index)=>{
       return(
         <option key={index} value={index}>{value.name}</option> 
         ); 
     })}
     </select>
-    );
-}
+      );
+  }
 }
 
 class Cpu extends React.Component{
@@ -73,7 +65,7 @@ class Cpu extends React.Component{
 
   componentWillMount() {
     axios
-    .get("http://monreve.ml/server/cpu.php")
+    .get("https://monreve.ml/server/cpu.php")
     .then(({ data }) => {
       this.setState({
         cpus: data
@@ -126,7 +118,7 @@ class Ram extends React.Component{
 
   componentWillMount() {
     axios
-    .get("http://monreve.ml/server/ram.php")
+    .get("https://monreve.ml/server/ram.php")
     .then(({ data }) => {
       this.setState({
         rams: data
@@ -178,7 +170,7 @@ onSelectChange(event) {
 
 componentWillMount() {
   axios
-  .get("http://monreve.ml/server/power.php")
+  .get("https://monreve.ml/server/power.php")
   .then(({ data }) => {
     this.setState({
       power: data
@@ -235,7 +227,7 @@ onSelectChange(event) {
 
 componentWillMount() {
   axios
-  .get("http://monreve.ml/server/videocard.php")
+  .get("https://monreve.ml/server/videocard.php")
   .then(({ data }) => {
     this.setState({
       video: data
@@ -282,7 +274,7 @@ onSelectChange(event) {
 
 componentWillMount() {
   axios
-  .get("http://monreve.ml/server/cases.php")
+  .get("https://monreve.ml/server/cases.php")
   .then(({ data }) => {
     this.setState({
       cases: data
@@ -335,13 +327,14 @@ onSelectChange(event) {
 
 componentWillMount() {
   axios
-  .get("http://monreve.ml/server/hdd.php")
+  .get("https://monreve.ml/server/hdd.php")
   .then(({ data }) => {
     this.setState({
       hdd: data
     });
   });
 }
+
 
 render() {
 
@@ -364,6 +357,22 @@ render() {
 }
 }
 
+class Loading extends Component{
+  render() {
+    return(
+      <div className="wrapp">
+       <div className="wrap">
+    <div className="circle circle-1"></div>
+    <div className="circle circle-1a"></div>
+    <div className="circle circle-2"></div>
+    <div className="circle circle-3"></div>
+  </div>
+  <h1>Loading&hellip;</h1>
+  </div>
+      );
+  }
+}
+
 class App extends Component {
   state = {
     selectValue :nulle,
@@ -372,7 +381,9 @@ class App extends Component {
     selectValueVideo: nulle,
     selectValueHdd: nulle,
     selectValueCpu: nulle,
-    selectValueCase: nulle
+    selectValueCase: nulle,
+    menus : [nulle],
+    connect : false
   };
   updateData = (value) => {
     this.setState({ selectValue: value })
@@ -396,6 +407,17 @@ class App extends Component {
     this.setState({ selectValueCase: value })
   }
 
+  componentWillMount() {
+  axios
+  .get("https://monreve.ml/server/mother.php")
+  .then(({ data }) => {
+    this.setState({
+      menus: data,
+      connect : true
+    });
+  });
+}
+
   render() {
     var mother = this.state.selectValue;
     var powerr = this.state.selectValuePower;
@@ -408,10 +430,11 @@ class App extends Component {
     var totalPrice = mother.price + powerr.price + memory.price + cpu.price + hdd.price + videocard.price + cases.price;
     var totalPower = (mother.power + memory.power + cpu.power + hdd.power + videocard.power)*(1 + 20/100);
 
+    if (this.state.connect === true) {
     return (
       <div className="wrapper">
       <div className="menu">
-      <p>Материнские платы</p><Motherboard updateData={this.updateData} />
+      <p>Материнские платы</p><Motherboard menus={this.state.menus} updateData={this.updateData} />
       <p>Процессоры</p><Cpu mItems={mother} updateDataCpu={this.updateDataCpu} />
       <p>Оперативная память</p><Ram rItems={mother} updateDataRam={this.updateDataRam} />
       <p>Видеокарты</p><Video  updateDataVideo={this.updateDataVideo} />
@@ -422,6 +445,11 @@ class App extends Component {
       <Info mItems={mother} cItems={cpu} rItems={memory} pItems={powerr} vItems={videocard} hItems={hdd} csItems={cases} tprice={totalPrice} /> 
       </div>
       );
+  }else{
+    return(
+      <Loading />
+    );
+  }
   }
 }
 
