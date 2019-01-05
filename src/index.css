@@ -3,6 +3,10 @@
 	box-sizing: border-box;
 }
 
+.visibile{
+	visibility: hidden;
+}
+
 body{
 	background: #F4F2F2;
 	margin: 0;
