@@ -24,7 +24,7 @@ class Motherboard extends React.Component{
     this.setState({selectValue: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/mother.php")
     .then(({ data }) => {
@@ -69,7 +69,7 @@ class Cpu extends React.Component{
     this.setState({selectValueCpu: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/cpu.php")
     .then(({ data }) => {
@@ -120,7 +120,7 @@ class Ram extends React.Component{
     this.setState({selectValueRam: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/ram.php")
     .then(({ data }) => {
@@ -172,7 +172,7 @@ class Power extends React.Component{
     this.setState({selectValuePower: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/power.php")
     .then(({ data }) => {
@@ -228,7 +228,7 @@ class Video extends React.Component{
     this.setState({selectValueVideo: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/videocard.php")
     .then(({ data }) => {
@@ -273,7 +273,7 @@ class Case extends React.Component{
     this.setState({selectValueCase: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/cases.php")
     .then(({ data }) => {
@@ -325,7 +325,7 @@ class Hdd extends React.Component{
     this.setState({selectValueHdd: event.target.value});
   }
 
-  componentWillMount() {
+  componentDidMount() {
     axios
     .get("https://monreve.ml/server/hdd.php")
     .then(({ data }) => {
