@@ -198,7 +198,7 @@ class Power extends React.Component{
             return(
               <option key={index} value={index}>{value.name}</option> 
             );
-          }else if((this.props.pItems.power > value.power)||(value.name === "не выбрано")){
+          }else if((this.props.pItems.power > value.power)||(value.price === 0)){
             return(
               <option key={index} value={index}>{value.name}</option> 
             );
