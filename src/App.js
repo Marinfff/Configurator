@@ -1,296 +1,450 @@
-import React, {Component} from 'react';
+
+import React, { Component } from 'react';
+import axios from 'axios';
+import Info from './Component/info';
 import './App.css';
 
-class Table extends Component {
+  let nulle = {
+    "name" : "не выбрано",
+    "power" : 0,
+    "price" : 0
+  }
+
+class Motherboard extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValue: 0,
+      menus : [nulle],
+  };
+
+  this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValue: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/mother.php")
+    .then(({ data }) => {
+      this.setState({
+      menus: data,
+      });
+      this.props.updateData(this.state.menus[this.state.selectValue]);
+  });
+}
+
   render() {
-    var 
-      cells = [],
-      posX = 0,
-      posY = 0;
-    cells = initTable(cells);
+    var menus = this.state.menus;
 
-    //Создаем функцию конструктор для массива с ячейками
-    function CreateTable(posY, posX, color) {
-      this.posX = posX;
-      this.posY = posY;
-      this.color = color;
-    }
-
-    function initTable(cells){
-      //Генерируем массив с данными о каждой ячейке
-      for (var i = 1; i <= 8; i++) {
-        for (var j = 1; j <= 4; j++) {
-          let 
-              first = 'blackcell',
-              second = 'whitecell';
-          if (i % 2 === 0) {
-              first = 'whitecell'
-              second = 'blackcell';   
-          }
-          cells.push(
-            new CreateTable(posY, posX, second)
-          );
-          posX += 50;
-          cells.push(
-            new CreateTable(posY, posX, first)
-          );
-          posX += 50;
-        }
-        posY += 50;
-        posX = 0;
-      }
-      return cells;
-    }
-
-//Отпраляем через коллбэк обьект c данными выбранной ячейки в App
-    var handleClick = (e) => {
-      var arr = [e.pageY, e.pageX];
-            let scell = cells;
-
-      for (var i = 0; i < scell.length; i++) {
-        if(
-            arr[0] >= scell[i].posY && arr[0] <= scell[i].posY + 50
-            &&
-            arr[1] >= scell[i].posX && arr[1] <= scell[i].posX + 50
-          ){
-            this.props.updateData(scell[i]);
-        }
-      }
-    }
-
-    return ( 
-    <div className = 'table' > {
-//Отрисовываем на странице ячейки по координатам Y X
-        cells.map((value, index) => {
-          return ( 
-          <div className = {
-              value.color
-            }
-            data-id = {
-              'cell_' + index
-            }       
-            style = {
-              {
-                top: value.posY + 'px',
-                left: value.posX + 'px'
-              }
-            }
-            onClick = {
-              (e) => handleClick(e)
-            } >
-            </div>
-          );
-        })
-      } </div>
+    for (let i = 0; i < menus.length; i++) {
+      menus[i].power = +menus[i].power;
+      menus[i].price = +menus[i].price;
+    };
+    return(
+      <select value={this.state.selectValue} onChange={this.onSelectChange} onClick={() => { this.props.updateData(menus[this.state.selectValue])}}>
+        {menus.map((value, index)=>{
+          return(
+            <option key={index} value={index}>{value.name}</option> 
+            ); 
+        })}
+      </select>
     );
   }
 }
 
-class Figure extends Component {
+class Cpu extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      figselect: null
+      selectValueCpu: 0,
+      cpus : [nulle]
     };
+
+    this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValueCpu: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/cpu.php")
+    .then(({ data }) => {
+      this.setState({
+        cpus: data
+      });
+      this.props.updateDataCpu(this.state.cpus[this.state.selectValueCpu]);
+    });
+  }
+  
+  render(){
+    var cpus = this.state.cpus;
+
+    for (let i = 0; i < cpus.length; i++) {
+      cpus[i].power = +cpus[i].power;
+      cpus[i].price = +cpus[i].price;
+    };
+    return (
+      <select value={this.state.selectValueCpu} onChange={this.onSelectChange} onClick={() => { this.props.updateDataCpu(cpus[this.state.selectValueCpu])}}> 
+        {cpus.map((value, index)=>{
+          if ((this.props.mItems.socket === value.socket)||(value.price === 0)) {
+            return(
+              <option key={index} value={index}>{value.name}</option> 
+            );
+          }else{
+            return(
+            null
+            );
+          }
+        })}
+      </select>
+    );
+  }
+}
+
+class Ram extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValueRam: 0,
+      rams: [nulle]
+    };
+
+    this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValueRam: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/ram.php")
+    .then(({ data }) => {
+      this.setState({
+        rams: data
+      });
+      this.props.updateDataRam(this.state.rams[this.state.selectValueRam]);
+    });
+  }
+
+  render(){
+    var rams = this.state.rams;
+
+    for (let i = 0; i < rams.length; i++) {
+      rams[i].power = +rams[i].power;
+      rams[i].price = +rams[i].price;
+    };
+
+    return (
+      <select value={this.state.selectValueRam} onChange={this.onSelectChange} onClick={() => { this.props.updateDataRam(rams[this.state.selectValueRam])}}> 
+        {rams.map((value, index)=>{
+          if ((this.props.rItems.ram === value.ram)||(value.price === 0)) {
+            return(
+              <option key={index} value={index}>{value.name}</option> 
+              );
+          }else{
+            return(
+            null
+            );
+          }
+        })}
+      </select>
+    );
+  }
+}
+
+class Power extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValuePower: 0,
+      power : [nulle]
+  };
+
+  this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValuePower: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/power.php")
+    .then(({ data }) => {
+      this.setState({
+        power: data
+      });
+      this.props.updateDataPower(this.state.power[this.state.selectValuePower]);
+    });
   }
 
   render() {
-//Принимает и добавляем в стейт обьект c данными выбранной фигуры
-    var handleClick = (e) => {
-      var arr = [e.pageY, e.pageX];
+    var powers = this.state.power;
 
-      let figures = this.props.chess;
-      
-      for (var i = 0; i < figures.length; i++) {
-        if(
-            arr[0] >= figures[i].posY && arr[0] <= figures[i].posY + 50
-            &&
-            arr[1] >= figures[i].posX && arr[1] <= figures[i].posX + 50
-          ){
-            this.setState({
-              figselect: figures[i]
-            });
-        }
-      }
-    }
+    for (let i = 0; i < powers.length; i++) {
+      powers[i].power = +powers[i].power;
+      powers[i].price = +powers[i].price;
+    };
 
-    var figselect = this.state.figselect;
-//Получем через props из App массив с фигурами и обьект с данными выбранной ячейки
-    var Chess = this.props.chess;
-    var cellselect = this.props.cellpos;   
+    return (
+      <select value={this.state.selectValuePower} onChange={this.onSelectChange} onClick={() => { this.props.updateDataPower(powers[this.state.selectValuePower])}}>
+        {powers.map((value, index)=>{
+          if ((this.props.pItems < value.power)||(value.price === 0)) {
+            return(
+              <option key={index} value={index}>{value.name}</option> 
+            );
+          }else if((this.props.pItems.power > value.power)||(value.price === 0)){
+            return(
+              <option key={index} value={index}>{value.name}</option> 
+            );
+          }else{
+            return(
+            null
+            );
+          }
+        })}
+      </select>
+    );
+  }
+}
 
-    console.log(cellselect);
-    console.log(figselect);
-//коллбэк для сбрасывания стейта в App    
-    var cleanСell = ()=>{
-      this.props.cleanCell(null);
-    }
+class Video extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValueVideo: 0,
+      video : [nulle]
+    };
 
-//Проверяем если была выбрана фигура и ячейка 
-    if (cellselect != null && figselect != null) {
-      if (cellselect.color !== 'whitecell') {
-        if(cellselect.posX < figselect.posX){
-          figselect.wLeft();
-          cleanСell();
-        }else{
-          figselect.wRight();
-          cleanСell();
-        }
-      } 
-    }
-  
-    return ( 
-    <div > {
-//Отрисовывем на странице фигуры по координатам Y X
-        Chess.map((value, index) => {
-          return ( 
-          <div className = {
-              value.color
-            }
-            data-id = {
-              'figure_' + index
-            }
-            style = {
-              {
-                top: value.posY + 'px',
-                left: value.posX + 'px'
-              }
-            }
-            onClick = {
-              (e) => handleClick(e)
-            } >
-            </div>
-          );
-        })
-      } </div>
+    this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValueVideo: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/videocard.php")
+    .then(({ data }) => {
+      this.setState({
+        video: data
+      });
+    });
+  }
+
+  render() {
+    var videos = this.state.video;
+
+    for (let i = 0; i < videos.length; i++) {
+      videos[i].power = +videos[i].power;
+      videos[i].price = +videos[i].price;
+    };
+
+    return (
+      <select value={this.state.selectValueVideo} onChange={this.onSelectChange} onClick={() => { this.props.updateDataVideo(videos[this.state.selectValueVideo])}}>
+        {videos.map((value, index)=>{
+          return(
+            <option key={index} value={index}>{value.name}</option> 
+          ); 
+        })}
+      </select>
+    );
+  }
+}
+
+class Case extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValueCase: 0,
+      cases : [nulle]
+  };
+
+    this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValueCase: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/cases.php")
+    .then(({ data }) => {
+      this.setState({
+        cases: data
+      });
+      this.props.updateDataCase(this.state.cases[this.state.selectValueCase])
+    });
+  }
+
+  render() {
+    var casess = this.state.cases;
+
+    for (let i = 0; i < casess.length; i++) {
+      casess[i].power = +casess[i].power;
+      casess[i].price = +casess[i].price;
+    };
+
+    return (
+      <select value={this.state.selectValueCase} onChange={this.onSelectChange} onClick={() => { this.props.updateDataCase(casess[this.state.selectValueCase])}}>
+        {casess.map((value, index)=>{
+          if ((this.props.csItems.format === value.format)||(value.price === 0)) {
+            return(
+              <option key={index} value={index}>{value.name}</option> 
+            );
+          }else{
+            return(
+               null
+            );
+          }
+        })}
+      </select>
+    );
+  }
+}
+
+class Hdd extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectValueHdd: 0,
+      hdd : [nulle]
+    };
+
+    this.onSelectChange = this.onSelectChange.bind(this);
+  }
+
+  onSelectChange(event) {
+    this.setState({selectValueHdd: event.target.value});
+  }
+
+  componentDidMount() {
+    axios
+    .get("https://monreve.ml/server/hdd.php")
+    .then(({ data }) => {
+      this.setState({
+        hdd: data
+      });
+      this.props.updateDataHdd(this.state.hdd[this.state.selectValueHdd])
+    });
+  }
+
+  render() {
+    var hdds = this.state.hdd;
+
+    for (let i = 0; i < hdds.length; i++) {
+      hdds[i].power = +hdds[i].power;
+      hdds[i].price = +hdds[i].price;
+    };
+
+    return (
+      <select value={this.state.selectValueHdd} onChange={this.onSelectChange} onClick={() => { this.props.updateDataHdd(hdds[this.state.selectValueHdd])}}>
+        {hdds.map((value, index)=>{
+          return(
+            <option key={index} value={index}>{value.name}</option> 
+          ); 
+        })}
+      </select>
+    );
+  }
+}
+
+class Loading extends Component{
+  render() {
+    return(
+      <div className="wrapp">
+        <div className="wrap">
+          <div className="circle circle-1"></div>
+          <div className="circle circle-1a"></div>
+          <div className="circle circle-2"></div>
+          <div className="circle circle-3"></div>
+        </div>
+        <h1>Загрузка&hellip;</h1>
+      </div>
     );
   }
 }
 
 class App extends Component {
   state = {
-    selectValue: null,
-    chesss: []
+    selectValue :nulle,
+    selectValuePower: nulle,
+    selectValueRam: nulle,
+    selectValueVideo: nulle,
+    selectValueHdd: nulle,
+    selectValueCpu: nulle,
+    selectValueCase: nulle
   };
-//коллбэк для получения координат выбранной ячейки из Table
-// и добавления их в стейт
   updateData = (value) => {
-    this.setState({
-      selectValue: value
-    })
+    this.setState({ selectValue: value})
   };
-//коллбэк для сброса стейта (выбранная ячейка) из Figure
-  cleanCell = (value) => {
-    this.setState({
-      selectValue: value
-    })
+  updateDataPower = (value) => {
+    this.setState({ selectValuePower: value })
   };
-
-  componentWillMount() {
-    var fRowLeft = 50,
-      fRowTop = 0,
-      black = "black",
-      white = "white";
-
-    var chess = [];
-//Создаем функцию конструктор для фигур и методы для перемещения по доске
-    function CreateObj(posY, posX, color) {
-      this.posX = posX;
-      this.posY = posY;
-      this.color = color;
-      this.wRight = function() {
-        this.posY -= 50;
-        this.posX += 50;
-      }
-      this.wLeft = function() {
-        this.posY -= 50;
-        this.posX -= 50;
-      }
-      this.bLeft = function() {
-        this.posY += 50;
-        this.posX -= 50;
-      }
-      this.bRight = function() {
-        this.posY += 50;
-        this.posX += 50;
-      }
-      this.wwRight = function() {
-        this.posY -= 100;
-        this.posX += 100;
-      }
-      this.wwLeft = function() {
-        this.posY -= 100;
-        this.posX -= 100;
-      }
-      this.bbLeft = function() {
-        this.posY += 100;
-        this.posX -= 100;
-      }
-      this.bbRight = function() {
-        this.posY += 100;
-        this.posX += 100;
-      }
-    }
-//Создаем массив с данными о каждой фигуре
-    for (var i = 0; i < 32; i++) {
-      if (i <= 4 && i >= 1) {
-        chess.push(
-          new CreateObj(fRowTop, fRowLeft, white)
-        );
-        fRowLeft += 100;
-      } else if (i > 4 && i <= 8) {
-        chess.push(
-          new CreateObj(fRowTop + 50, fRowLeft - 450, white)
-        );
-        fRowLeft += 100;
-      } else if (i > 8 && i <= 12) {
-        chess.push(
-          new CreateObj(fRowTop + 100, fRowLeft - 800, white)
-        );
-        fRowLeft += 100;
-      } else if (i > 12 && i <= 16) {
-        chess.push(
-          new CreateObj(fRowTop + 250, fRowLeft - 1250, black)
-        );
-        fRowLeft += 100;
-      } else if (i > 16 && i <= 20) {
-        chess.push(
-          new CreateObj(fRowTop + 300, fRowLeft - 1600, black)
-        );
-        fRowLeft += 100;
-      } else if (i > 20 && i <= 24) {
-        chess.push(
-          new CreateObj(fRowTop + 350, fRowLeft - 2050, black)
-        );
-        fRowLeft += 100;
-      }
-    }
-//Добавляем в стейт полученный массив для использования его в рендере
-    if (this.state.chesss == 0) {
-      this.setState({
-        chesss: chess
-      });
-    }
+  updateDataRam = (value) => {
+    this.setState({ selectValueRam: value })
+  };
+  updateDataVideo = (value) => {
+    this.setState({ selectValueVideo: value })
+  };
+  updateDataHdd = (value) => {
+    this.setState({ selectValueHdd: value })
+  };
+  updateDataCpu = (value) => {
+    this.setState({ selectValueCpu: value })
+  };
+  updateDataCase = (value) => {
+    this.setState({ selectValueCase: value })
   }
 
   render() {
-    var cellposition = this.state.selectValue;
-//Отправляем в Figure массив с обьектами и координаты выбранной ячейки 
-    return ( 
-    <div >
-      <Figure chess = {
-        this.state.chesss
-      }
-      cellpos = {
-        cellposition
-      }
-      cleanCell = {
-        this.cleanCell
-      }
-      /><Table updateData = {
-        this.updateData
-      }
-      /></div >
+    var mother = this.state.selectValue;
+    var powerr = this.state.selectValuePower;
+    var memory = this.state.selectValueRam;
+    var cpu = this.state.selectValueCpu;
+    var hdd = this.state.selectValueHdd;
+    var videocard = this.state.selectValueVideo;
+    var cases = this.state.selectValueCase;
+    var Element = '';
+    var ClassName = '';
+    
+    var totalPrice = mother.price + powerr.price + memory.price + cpu.price + hdd.price + videocard.price + cases.price;
+    var totalPower = (mother.power + memory.power + cpu.power + hdd.power + videocard.power)*(1 + 30/100);
+
+    if (((mother !== nulle)&&(powerr !== nulle))&&
+        ((memory !== nulle)&&(cpu !== nulle))&&
+        ((hdd !== nulle)&&(cases !== nulle))) {
+      Element = ''
+      ClassName = "wrapper"
+    }else{
+      Element = <Loading />
+      ClassName = "visibile"
+    }
+
+    return (
+      <div>
+      {Element}
+        <div className ={ClassName}>
+          <div className ="menu">
+            <p>Материнские платы</p><Motherboard menus={this.state.menus} updateData={this.updateData} />
+            <p>Процессоры</p><Cpu mItems={mother} updateDataCpu={this.updateDataCpu} />
+            <p>Оперативная память</p><Ram rItems={mother} updateDataRam={this.updateDataRam} />
+            <p>Видеокарты</p><Video  updateDataVideo={this.updateDataVideo} />
+            <p>Жесткие диски</p><Hdd updateDataHdd={this.updateDataHdd} />
+            <p>Блоки питания</p><Power pItems={totalPower} updateDataPower={this.updateDataPower} />
+            <p>Кейсы</p><Case csItems={mother}  updateDataCase={this.updateDataCase} />
+          </div>
+          <Info mItems={mother} cItems={cpu} rItems={memory} pItems={powerr} vItems={videocard} hItems={hdd} csItems={cases} tprice={totalPrice} /> 
+        </div>
+      </div>
     );
   }
 }
